@@ -38,12 +38,15 @@ class NewVisitorTest(unittest.TestCase):
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
 
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Сделать мушку из павлиньих перьев')
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+
         table = self.browser.find_element(By.ID, 'id_list_table')
         rows = table.find_elements(By.TAG_NAME, 'tr')
-        self.assertTrue(
-            any(row.text == '1: Купить павлиньи перья' for row in rows),
-            "Новый элемент списка не появился в таблице"
-        )
+        self.assertIn('1: Купить павлиньи перья', [row.text for row in rows])
+        self.assertIn('2: Сделать мушку из павлиньих перьев', [row.text for row in rows])
 
         self.fail('Закончить тест')
 
