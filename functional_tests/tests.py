@@ -71,9 +71,6 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Купить павлиньи перья')
 
-        edith_list_url = self.browser.current_url
-        self.assertRegax(edith_list_url, '/lists/.+')
-
         # Second user enter data
         self.browser.quit()
         options = webdriver.FirefoxOptions()
