@@ -20,8 +20,9 @@ class HomePageTest(TestCase):
 
     def test_redirects_after_POST(self):
         responce = self.client.post('/lists/new', data={'item_text': 'A new list item'})
+        new_list = List.objects.first()
         self.assertEqual(responce.status_code, 302)
-        self.assertEqual(responce['location'], '/lists/one/')
+        self.assertEqual(responce['location'], f'/lists/{new_list.id}/')
 
     def test_only_saves_items_when_necessary(self):
         self.client.get('/')
@@ -62,18 +63,25 @@ class ListAndItemModelTest(TestCase):
 class ListViewTest(TestCase):
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/one/')
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}/')
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_displays_all_list_items(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='itemey 1', list=list_)
-        Item.objects.create(text='itemey 2', list=list_)
+    def test_displays_only_items_for_that_list(self):
+        correct_list = List.objects.create()
+        Item.objects.create(text='itemey 1', list=correct_list)
+        Item.objects.create(text='itemey 2', list=correct_list)
 
-        responce = self.client.get('/lists/one/')
+        other_list = List.objects.create()
+        Item.objects.create(text='other 1', list=other_list)
+        Item.objects.create(text='other 2', list=other_list)
+
+        responce = self.client.get(f'/lists/{correct_list.id}/')
 
         self.assertIn('itemey 1', responce.content.decode())
         self.assertIn('itemey 2', responce.content.decode())
+        self.assertNotIn('other 1', responce.content.decode())
+        self.assertNotIn('other 2', responce.content.decode())
 
 
 class NewListTest(TestCase):
@@ -86,4 +94,5 @@ class NewListTest(TestCase):
 
     def test_redirects_after_POST(self):
         responce = self.client.post('/lists/new', data={'item_text': 'A new list item'})
-        self.assertRedirects(responce, '/lists/one/')
+        new_list = List.objects.first()
+        self.assertRedirects(responce, f'/lists/{new_list.id}/')
