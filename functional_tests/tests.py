@@ -1,4 +1,4 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
@@ -12,11 +12,11 @@ import time
 MAX_WAIT = 10
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self) -> None:
         options = webdriver.FirefoxOptions()
-        options.add_argument('-headless')
+        options.add_argument('--headless')
         self.browser = webdriver.Firefox(
             service=Service(GeckoDriverManager().install()),
             options=options
