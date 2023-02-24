@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 
+import os
 import time
 
 
@@ -21,6 +22,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
             service=Service(GeckoDriverManager().install()),
             options=options
         )
+        staging_server = os.environ.get('STRAGING_SERVER')
+        if staging_server:
+            self.live_server_url = f'http://{staging_server}'
 
     def tearDown(self) -> None:
         self.browser.quit()
